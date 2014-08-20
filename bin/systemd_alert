@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require 'systemd_alert/cli'
+
+SystemdAlert::CLI.new.start
