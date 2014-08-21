@@ -1,16 +1,36 @@
 require 'yaml'
+require 'systemd_mon/monitor'
+require 'systemd_mon/error'
+require 'systemd_mon/dbus_manager'
 
-module SystemdAlert
+module SystemdMon
   class CLI
     def initialize
-      @me = "systemd_alert"
+      @me = "systemd_mon"
+      @verbose = true
     end
 
     def start
       yaml_config_file = ARGV.first
       @options = load_and_validate_options(yaml_config_file)
+
+      monitor = Monitor.new(DBusManager.new)
+      monitor.register_units @options['units']
+      monitor.start
+    rescue SystemdMon::Error => e
+      err_string = e.message
+      if verbose
+        err_string << " - #{e.original.message} (#{e.original.class})"
+        err_string << "\n\t#{e.original.backtrace.join("\n\t")}"
+      end
+      fatal_error(err_string)
     rescue => e
-      fatal_error("#{e.message} (#{e.class})")
+      err_string = e.message
+      if verbose
+        err_string << " (#{e.class})"
+        err_string << "\n\t#{e.backtrace.join("\n\t")}"
+      end
+      fatal_error(err_string)
     end
 
   protected
@@ -38,5 +58,8 @@ module SystemdAlert
       $stderr.puts " #{@me} error: #{message}"
       exit code
     end
+
+  protected
+    attr_reader :verbose
   end
 end

@@ -1,15 +1,15 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'systemd_alert/version'
+require 'systemd_mon/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "systemd_alert"
-  spec.version       = SystemdAlert::VERSION
+  spec.name          = "systemd_mon"
+  spec.version       = SystemdMon::VERSION
   spec.authors       = ["Jon Cairns"]
   spec.email         = ["jon@joncairns.com"]
-  spec.summary       = %q{Provides an API to run callbacks when systemd services enter into a failed state.}
-  spec.description   = %q{Provides an API to run callbacks when systemd services enter into a failed state.}
+  spec.summary       = %q{Monitor systemd units and trigger alerts for failed states}
+  spec.description   = %q{Monitor systemd units and trigger alerts for failed states}
   spec.homepage      = "https://github.com/joonty/systemd_alert"
   spec.license       = "MIT"
 

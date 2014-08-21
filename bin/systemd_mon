@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require 'systemd_mon/cli'
+
+SystemdMon::CLI.new.start
