@@ -1,4 +1,5 @@
 require 'yaml'
+require 'systemd_mon'
 require 'systemd_mon/monitor'
 require 'systemd_mon/error'
 require 'systemd_mon/dbus_manager'
@@ -6,17 +7,18 @@ require 'systemd_mon/dbus_manager'
 module SystemdMon
   class CLI
     def initialize
-      @me = "systemd_mon"
-      @verbose = true
+      self.me      = "systemd_mon"
+      self.verbose = true
     end
 
     def start
       yaml_config_file = ARGV.first
-      @options = load_and_validate_options(yaml_config_file)
+      self.options = load_and_validate_options(yaml_config_file)
+      self.verbose = options['verbose'] || false
+      Logger.verbose = verbose
 
-      monitor = Monitor.new(DBusManager.new)
-      monitor.register_units @options['units']
-      monitor.start
+      start_monitor
+
     rescue SystemdMon::Error => e
       err_string = e.message
       if verbose
@@ -34,6 +36,20 @@ module SystemdMon
     end
 
   protected
+    def start_monitor
+      monitor = Monitor.new(DBusManager.new)
+
+      # Load units to monitor
+      monitor.register_units options['units']
+
+      options['notifiers'].each do |name, notifier_options|
+        klass = NotifierLoader.new.get_class(name)
+        monitor.add_notifier klass.new(notifier_options)
+      end
+
+      monitor.start
+    end
+
     def load_and_validate_options(yaml_config_file)
       options = load_options(yaml_config_file)
 
@@ -55,11 +71,11 @@ module SystemdMon
     end
 
     def fatal_error(message, code = 255)
-      $stderr.puts " #{@me} error: #{message}"
+      $stderr.puts " #{me} error: #{message}"
       exit code
     end
 
   protected
-    attr_reader :verbose
+    attr_accessor :verbose, :options, :me
   end
 end

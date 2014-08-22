@@ -1,9 +1,21 @@
+require 'systemd_mon/logger'
+require 'systemd_mon/notification_centre'
+require 'systemd_mon/notification'
+require 'systemd_mon/error'
+
 module SystemdMon
   class Monitor
     def initialize(dbus_manager)
+      self.hostname     = `hostname`.strip
       self.dbus_manager = dbus_manager
       self.units        = []
-      self.callback     = lambda(&method(:unit_change_callback))
+      self.change_callback     = lambda(&method(:unit_change_callback))
+      self.notification_centre = NotificationCentre.new
+    end
+
+    def add_notifier(notifier)
+      notification_centre << notifier
+      self
     end
 
     def register_unit(unit_name)
@@ -18,22 +30,51 @@ module SystemdMon
       self
     end
 
-    def on_unit_change(&callback)
-      self.callback = callback
+    def on_change(&callback)
+      self.change_callback = callback
+      self
+    end
+
+    def on_each_state_change(&callback)
+      self.each_state_change_callback = callback
+      self
     end
 
     def start
+      startup_check!
       units.each do |unit|
-        unit.on_change(&callback)
+        if change_callback
+          unit.on_change(&change_callback)
+        end
+        if each_state_change_callback
+          unit.on_each_state_change(&each_state_change_callback)
+        end
       end
+
+      Logger.puts "Monitoring changes to #{units.count} units"
+      Logger.debug { " - " + units.map(&:name).join("\n - ") + "\n\n" }
+      Logger.debug { "Using notifiers: #{notification_centre.classes.join(", ")}"}
       dbus_manager.runner.run
     end
-protected
-    attr_accessor :units, :dbus_manager, :callback
 
-    def unit_change_callback(unit, notifier)
-      puts "Unit changed: #{unit.name}, #{unit.active_state}, #{unit.sub_state}"
-      notifier.
+protected
+    attr_accessor :units, :dbus_manager, :change_callback, :each_state_change_callback, :hostname, :notification_centre
+
+    def startup_check!
+      unless units.any?
+        raise MonitorError, "At least one systemd unit should be registered before monitoring can start"
+      end
+      unless notification_centre.any?
+        raise MonitorError, "At least one notifier should be registered before monitoring can start"
+      end
+      self
+    end
+
+    def unit_change_callback(unit)
+      Logger.puts "#{unit.name} #{unit.state_change.status_text}: #{unit.state.active} (#{unit.state.sub})"
+      Logger.debug unit.state_change.to_s
+      Logger.puts
+      notification_centre.notify! Notification.new(hostname, unit)
     end
   end
 end

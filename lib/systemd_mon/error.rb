@@ -10,6 +10,8 @@ module SystemdMon
     end
   end
 
+  class MonitorError < Error; end
   class UnknownUnitError < Error; end
   class NotificationError < Error; end
+  class NotifierError < Error; end
 end
