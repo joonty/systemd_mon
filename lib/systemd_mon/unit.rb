@@ -1,9 +1,8 @@
 require 'systemd_mon/state'
-require 'systemd_mon/state_change'
 
 module SystemdMon
   class Unit
-    attr_reader :name, :state, :state_change
+    attr_reader :name
 
     IFACE_UNIT  = "org.freedesktop.systemd1.Unit"
     IFACE_PROPS = "org.freedesktop.DBus.Properties"
@@ -13,26 +12,12 @@ module SystemdMon
       self.path = path
       self.dbus_object = dbus_object
       prepare_dbus_objects!
-
-      self.state = build_state
-      self.state_change = StateChange.new(state)
-
-      register_listener!
     end
 
-    def register_listener!
+    def register_listener!(queue)
       dbus_object.on_signal("PropertiesChanged") do |iface|
         if iface == IFACE_UNIT
-          self.state = build_state
-          self.state_change << state
-
-          if each_state_change_callback
-            each_state_change_callback.call self
-          end
-          if change_callback && state_change.important?
-            change_callback.call self
-            reset_state_change!
-          end
+          queue.enq [self, build_state]
         end
       end
     end
@@ -51,7 +36,7 @@ module SystemdMon
 
   protected
     attr_accessor :path, :dbus_object, :change_callback, :each_state_change_callback
-    attr_writer   :name, :state, :prev_state, :state_change
+    attr_writer   :name
 
     def build_state
       State.new(
@@ -60,10 +45,6 @@ module SystemdMon
         property("LoadState"),
         property("UnitFileState")
       )
-    end
-
-    def reset_state_change!
-      self.state_change = StateChange.new(state)
     end
 
     def prepare_dbus_objects!

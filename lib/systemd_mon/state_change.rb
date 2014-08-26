@@ -4,8 +4,9 @@ module SystemdMon
 
     attr_reader :states
 
-    def initialize(original_state)
-      self.states = [original_state]
+    def initialize(original_state = nil)
+      self.states = []
+      states << original_state if original_state
     end
 
     def last

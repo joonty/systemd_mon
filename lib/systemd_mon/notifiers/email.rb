@@ -18,7 +18,7 @@ module SystemdMon::Notifiers
       unit = notification.unit
       subject = "#{unit.name} on #{notification.hostname}: #{unit.state_change.status_text}"
       message = "Systemd unit #{unit.name} on #{notification.hostname} status: #{unit.state_change.status_text}\n"
-      message << unit.state_change.to_s
+      message << "#{unit.state_change.last.active} (#{unit.state_change.last.sub})"
       message << "\nRegards, SystemdMon"
 
       send_mail subject, message

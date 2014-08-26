@@ -1,4 +1,6 @@
+require 'thread'
 require 'systemd_mon/logger'
+require 'systemd_mon/callback_manager'
 require 'systemd_mon/notification_centre'
 require 'systemd_mon/notification'
 require 'systemd_mon/error'
@@ -42,19 +44,29 @@ module SystemdMon
 
     def start
       startup_check!
+
+      state_q = Queue.new
       units.each do |unit|
-        if change_callback
-          unit.on_change(&change_callback)
-        end
-        if each_state_change_callback
-          unit.on_each_state_change(&each_state_change_callback)
-        end
+        unit.register_listener! state_q
       end
 
       Logger.puts "Monitoring changes to #{units.count} units"
       Logger.debug { " - " + units.map(&:name).join("\n - ") + "\n\n" }
       Logger.debug { "Using notifiers: #{notification_centre.classes.join(", ")}"}
-      dbus_manager.runner.run
+
+      threads = []
+      manager = CallbackManager.new(state_q)
+
+      Thread.abort_on_exception = true
+
+      threads << Thread.new do
+        manager.start change_callback, each_state_change_callback
+      end
+      threads << Thread.new do
+        dbus_manager.runner.run
+      end
+      threads.each(&:join)
+
     end
 
 protected
