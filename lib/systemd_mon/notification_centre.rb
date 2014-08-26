@@ -26,19 +26,24 @@ module SystemdMon
       self.notifiers << notifier
     end
 
+    def notify_start!(hostname)
+      each_notifier do |notifier|
+        Logger.puts "Notifying SystemdMon start via #{notifier.class}"
+        notifier.notify_start! hostname
+      end
+    end
+
+    def notify_stop!(hostname)
+      each_notifier do |notifier|
+        Logger.puts "Notifying SystemdMon stop via #{notifier.class}"
+        notifier.notify_stop! hostname
+      end
+    end
+
     def notify!(notification)
-      self.notifiers.each do |notifier|
-        #Thread.start do
-          begin
-            Logger.puts "Notifying state change of #{notification.unit.name} via #{notifier.class}"
-            notifier.notify! notification
-          rescue => e
-            err = "Failed to send notification via #{notifier.class}:\n"
-            err << "  #{e.class}: #{e.message}\n"
-            err << "  Backtrace: #{e.backtrace.join('\n\t')}\n\n"
-            Logger.error err
-          end
-        #end
+      each_notifier do |notifier|
+        Logger.puts "Notifying state change of #{notification.unit.name} via #{notifier.class}"
+        notifier.notify! notification
       end
     end
 
@@ -46,5 +51,19 @@ module SystemdMon
 
   protected
     attr_accessor :notifiers
+
+    def each_notifier
+      notifiers.map { |notifier|
+        Thread.new do
+          begin
+            yield notifier
+          rescue => e
+            Logger.error "Failed to send notification via #{notifier.class}:\n"
+            Logger.error "  #{e.class}: #{e.message}\n"
+            Logger.debug_error { "\n\t#{e.backtrace.join('\n\t')}\n" }
+          end
+        end
+      }.each(&:join)
+    end
   end
 end

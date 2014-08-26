@@ -1,6 +1,6 @@
 require 'dbus'
 require 'systemd_mon/error'
-require 'systemd_mon/unit'
+require 'systemd_mon/dbus_unit'
 
 module SystemdMon
   class DBusManager
@@ -14,7 +14,7 @@ module SystemdMon
 
     def fetch_unit(unit_name)
       path = systemd_object.GetUnit(unit_name).first
-      Unit.new(unit_name, path, systemd_service.object(path))
+      DBusUnit.new(unit_name, path, systemd_service.object(path))
     rescue DBus::Error
       raise SystemdMon::UnknownUnitError, "Unknown or unloaded systemd unit '#{unit_name}'"
     end

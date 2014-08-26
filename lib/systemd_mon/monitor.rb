@@ -44,6 +44,8 @@ module SystemdMon
 
     def start
       startup_check!
+      at_exit { notification_centre.notify_stop! hostname }
+      notification_centre.notify_start! hostname
 
       state_q = Queue.new
       units.each do |unit|

@@ -1,13 +1,16 @@
 require 'mail'
+require 'systemd_mon/notifiers/base'
 require 'systemd_mon/logger'
+require 'systemd_mon/formatters/state_table_formatter'
 
 module SystemdMon::Notifiers
-  class Email
-    def initialize(options)
-      self.options = options
+  class Email < Base
+    def initialize(*)
+      super
       if options['smtp']
+        opts = options
         Mail.defaults do
-          delivery_method :smtp, Hash[options['smtp'].map { |h, k| [h.to_sym, k] }]
+          delivery_method :smtp, Hash[opts['smtp'].map { |h, k| [h.to_sym, k] }]
         end
       end
 
@@ -17,11 +20,13 @@ module SystemdMon::Notifiers
     def notify!(notification)
       unit = notification.unit
       subject = "#{unit.name} on #{notification.hostname}: #{unit.state_change.status_text}"
-      message = "Systemd unit #{unit.name} on #{notification.hostname} status: #{unit.state_change.status_text}\n"
-      message << "#{unit.state_change.last.active} (#{unit.state_change.last.sub})"
+      message = "Systemd unit #{unit.name} on #{notification.hostname} #{unit.state_change.status_text}: #{unit.state.active} (#{unit.state.sub})\n\n"
+      message << SystemdMon::Formatters::StateTableFormatter.new(unit).as_text
       message << "\nRegards, SystemdMon"
 
       send_mail subject, message
+
+      log "sent email notification"
     end
 
   protected
@@ -35,9 +40,9 @@ module SystemdMon::Notifiers
     end
 
     def send_mail(subject, message)
-      SystemdMon::Logger.debug("Sending email to #{options['to']}:")
-      SystemdMon::Logger.debug(%Q{ -> Subject: "#{subject}"})
-      SystemdMon::Logger.debug(%Q{ -> Message: "#{message}"})
+      debug("Sending email to #{options['to']}:")
+      debug(%Q{ -> Subject: "#{subject}"})
+      debug(%Q{ -> Message: "#{message}"})
 
       mail = Mail.new do
         subject subject

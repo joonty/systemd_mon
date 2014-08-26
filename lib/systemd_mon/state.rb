@@ -7,10 +7,11 @@ module SystemdMon
     attr_reader :active, :sub, :loaded, :unit_file, :all_states
 
     def initialize(active, sub, loaded, unit_file)
-      @active     = StateValue.new("active", active, %w(active), %w(inactive))
-      @sub        = StateValue.new("status", sub)
-      @loaded     = StateValue.new("loaded", loaded, %w(loaded))
-      @unit_file  = StateValue.new("file", unit_file, %w(enabled), %w(disabled))
+      timestamp   = Time.now
+      @active     = StateValue.new("active", active, timestamp, %w(active), %w(inactive))
+      @sub        = StateValue.new("status", sub, timestamp)
+      @loaded     = StateValue.new("loaded", loaded, timestamp, %w(loaded))
+      @unit_file  = StateValue.new("file", unit_file, timestamp, %w(enabled), %w(disabled))
       @all_states = [@active, @sub, @loaded, @unit_file]
     end
 

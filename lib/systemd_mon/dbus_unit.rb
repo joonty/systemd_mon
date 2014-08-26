@@ -1,7 +1,7 @@
 require 'systemd_mon/state'
 
 module SystemdMon
-  class Unit
+  class DBusUnit
     attr_reader :name
 
     IFACE_UNIT  = "org.freedesktop.systemd1.Unit"
@@ -15,6 +15,7 @@ module SystemdMon
     end
 
     def register_listener!(queue)
+      queue.enq [self, build_state] # initial state
       dbus_object.on_signal("PropertiesChanged") do |iface|
         if iface == IFACE_UNIT
           queue.enq [self, build_state]
