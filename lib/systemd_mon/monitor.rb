@@ -13,6 +13,7 @@ module SystemdMon
       self.units        = []
       self.change_callback     = lambda(&method(:unit_change_callback))
       self.notification_centre = NotificationCentre.new
+      Thread.abort_on_exception = true
     end
 
     def add_notifier(notifier)
@@ -48,9 +49,6 @@ module SystemdMon
       notification_centre.notify_start! hostname
 
       state_q = Queue.new
-      units.each do |unit|
-        unit.register_listener! state_q
-      end
 
       Logger.puts "Monitoring changes to #{units.count} units"
       Logger.debug { " - " + units.map(&:name).join("\n - ") + "\n\n" }
@@ -59,7 +57,10 @@ module SystemdMon
       threads = []
       manager = CallbackManager.new(state_q)
 
-      Thread.abort_on_exception = true
+      units.each do |unit|
+        unit.register_listener! state_q
+      end
+
 
       threads << Thread.new do
         manager.start change_callback, each_state_change_callback

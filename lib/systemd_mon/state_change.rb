@@ -13,6 +13,10 @@ module SystemdMon
       states.last
     end
 
+    def length
+      states.length
+    end
+
     def <<(state)
       self.states << state
       @diff = nil
@@ -40,24 +44,34 @@ module SystemdMon
       last.fail?
     end
 
+    def restart?
+      first.ok? && last.ok? && changes.any? { |s| s.active == "deactivating" }
+    end
+
     def still_fail?
-      first.fail? && last.fail?
+      length > 1 && first.fail? && last.fail?
     end
 
     def status_text
       if recovery?
         "recovered"
+      elsif restart?
+        "restarted"
       elsif still_fail?
-        "still failing"
+        "still failed"
       elsif fail?
         "failed"
       else
-        "ok"
+        "started"
       end
     end
 
     def important?
-      diff.map(&:last).any?(&:important?)
+      if length == 1
+        first.fail?
+      else
+        diff.map(&:last).any?(&:important?)
+      end
     end
 
     def diff
@@ -68,7 +82,11 @@ module SystemdMon
     end
 
     def zipped
-      first.all_states.zip(*changes.map(&:all_states))
+      if length == 1
+        first.all_states
+      else
+        first.all_states.zip(*changes.map(&:all_states))
+      end
     end
 
     def to_s

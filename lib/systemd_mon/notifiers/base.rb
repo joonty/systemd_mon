@@ -13,12 +13,16 @@ module SystemdMon::Notifiers
     end
 
     # Subclasses can choose to do something when SystemdMon starts
-    def notify_start!(hostname)
-    end
+    # E.g. with
+    #
+    # def notify_start!(hostname)
+    # end
 
     # Subclasses can choose to do something when SystemdMon stops
-    def notify_stop!(hostname)
-    end
+    # E.g. with
+    #
+    # def notify_stop!(hostname)
+    # end
 
     def log(message)
       SystemdMon::Logger.puts "#{me}: #{message}"

@@ -28,15 +28,23 @@ module SystemdMon
 
     def notify_start!(hostname)
       each_notifier do |notifier|
-        Logger.puts "Notifying SystemdMon start via #{notifier.class}"
-        notifier.notify_start! hostname
+        if notifier.respond_to?(:notify_start!)
+          Logger.puts "Notifying SystemdMon start via #{notifier.class}"
+          notifier.notify_start! hostname
+        else
+          Logger.debug { "#{notifier.class} doesn't respond to 'notify_start!', not sending notification" }
+        end
       end
     end
 
     def notify_stop!(hostname)
       each_notifier do |notifier|
-        Logger.puts "Notifying SystemdMon stop via #{notifier.class}"
-        notifier.notify_stop! hostname
+        if notifier.respond_to?(:notify_stop!)
+          Logger.puts "Notifying SystemdMon stop via #{notifier.class}"
+          notifier.notify_stop! hostname
+        else
+          Logger.debug { "#{notifier.class} doesn't respond to 'notify_start!', not sending notification" }
+        end
       end
     end
 

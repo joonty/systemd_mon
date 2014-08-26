@@ -38,6 +38,10 @@ module SystemdMon
       value
     end
 
+    def ==(other)
+      value == other
+    end
+
   protected
     attr_writer :name, :value, :ok_states, :failure_states, :timestamp
   end

@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["jon@joncairns.com"]
   spec.summary       = %q{Monitor systemd units and trigger alerts for failed states}
   spec.description   = %q{Monitor systemd units and trigger alerts for failed states}
-  spec.homepage      = "https://github.com/joonty/systemd_alert"
+  spec.homepage      = "https://github.com/joonty/systemd_mon"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
