@@ -48,6 +48,10 @@ module SystemdMon
       first.ok? && last.ok? && changes.any? { |s| s.active == "deactivating" }
     end
 
+    def reload?
+      first.ok? && last.ok? && changes.any? { |s| s.active == "reloading" }
+    end
+
     def still_fail?
       length > 1 && first.fail? && last.fail?
     end
@@ -57,6 +61,8 @@ module SystemdMon
         "recovered"
       elsif restart?
         "restarted"
+      elsif reload?
+        "reloaded"
       elsif still_fail?
         "still failed"
       elsif fail?

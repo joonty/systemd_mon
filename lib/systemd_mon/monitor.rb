@@ -48,28 +48,18 @@ module SystemdMon
       at_exit { notification_centre.notify_stop! hostname }
       notification_centre.notify_start! hostname
 
-      state_q = Queue.new
-
       Logger.puts "Monitoring changes to #{units.count} units"
       Logger.debug { " - " + units.map(&:name).join("\n - ") + "\n\n" }
       Logger.debug { "Using notifiers: #{notification_centre.classes.join(", ")}"}
 
-      threads = []
-      manager = CallbackManager.new(state_q)
+      state_q = Queue.new
 
       units.each do |unit|
         unit.register_listener! state_q
       end
 
-
-      threads << Thread.new do
-        manager.start change_callback, each_state_change_callback
-      end
-      threads << Thread.new do
-        dbus_manager.runner.run
-      end
-      threads.each(&:join)
-
+      [start_callback_thread(state_q),
+       start_dbus_thread].each(&:join)
     end
 
 protected
@@ -83,6 +73,19 @@ protected
         raise MonitorError, "At least one notifier should be registered before monitoring can start"
       end
       self
+    end
+
+    def start_dbus_thread
+      Thread.new do
+        dbus_manager.runner.run
+      end
+    end
+
+    def start_callback_thread(state_q)
+      Thread.new do
+        manager = CallbackManager.new(state_q)
+        manager.start change_callback, each_state_change_callback
+      end
     end
 
     def unit_change_callback(unit)
