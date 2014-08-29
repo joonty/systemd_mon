@@ -22,8 +22,13 @@ module SystemdMon
     rescue SystemdMon::Error => e
       err_string = e.message
       if verbose
-        err_string << " - #{e.original.message} (#{e.original.class})"
-        err_string << "\n\t#{e.original.backtrace.join("\n\t")}"
+        if e.original
+          err_string << " - #{e.original.message} (#{e.original.class})"
+          err_string << "\n\t#{e.original.backtrace.join("\n\t")}"
+        else
+          err_string << " (#{e.class})"
+          err_string << "\n\t#{e.backtrace.join("\n\t")}"
+        end
       end
       fatal_error(err_string)
     rescue => e

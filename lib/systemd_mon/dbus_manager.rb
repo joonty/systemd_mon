@@ -9,7 +9,11 @@ module SystemdMon
       self.systemd_service = dbus.service("org.freedesktop.systemd1")
       self.systemd_object  = systemd_service.object("/org/freedesktop/systemd1")
       systemd_object.introspect
-      systemd_object.Subscribe
+      if systemd_object.respond_to?("Subscribe")
+        systemd_object.Subscribe
+      else
+        raise SystemdMon::SystemdError, "Systemd is not installed, or is an incompatible version. It must provide the Subscribe dbus method: version 204 is the minimum recommended version."
+      end
     end
 
     def fetch_unit(unit_name)
