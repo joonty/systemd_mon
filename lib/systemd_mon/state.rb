@@ -8,7 +8,7 @@ module SystemdMon
 
     def initialize(active, sub, loaded, unit_file)
       timestamp   = Time.now
-      @active     = StateValue.new("active", active, timestamp, %w(active), %w(inactive))
+      @active     = StateValue.new("active", active, timestamp, %w(active), %w(inactive failed))
       @sub        = StateValue.new("status", sub, timestamp)
       @loaded     = StateValue.new("loaded", loaded, timestamp, %w(loaded))
       @unit_file  = StateValue.new("file", unit_file, timestamp, %w(enabled), %w(disabled))

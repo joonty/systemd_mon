@@ -9,7 +9,11 @@ module SystemdMon
     end
 
     def self.types
-      [:alert, :info, :ok]
+      [:alert, :warning, :info, :ok]
+    end
+
+    def type_text
+      type.to_s.capitalize
     end
 
   protected

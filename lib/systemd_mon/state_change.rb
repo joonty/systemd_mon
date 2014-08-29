@@ -48,6 +48,10 @@ module SystemdMon
       first.ok? && last.ok? && changes.any? { |s| s.active == "deactivating" }
     end
 
+    def auto_restart?
+      first.ok? && last.ok? && changes.any? { |s| s.sub == "auto-restart" }
+    end
+
     def reload?
       first.ok? && last.ok? && changes.any? { |s| s.active == "reloading" }
     end
@@ -59,6 +63,8 @@ module SystemdMon
     def status_text
       if recovery?
         "recovered"
+      elsif auto_restart?
+        "automatically restarted"
       elsif restart?
         "restarted"
       elsif reload?

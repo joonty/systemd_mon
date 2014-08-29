@@ -15,32 +15,32 @@ module SystemdMon::Notifiers
     end
 
     def notify_start!(hostname)
-      message = "Startup notification for SystemdMon"
+      message = "SystemdMon is starting on #{hostname}"
 
       attach = {
         fallback: message,
-        text: "SystemdMon is starting on #{hostname}",
+        text: message,
         color: "good"
       }
 
-      notifier.ping message, attachments: [attach]
+      notifier.ping "", attachments: [attach]
     end
 
     def notify_stop!(hostname)
-      message = "Shutdown alert for SystemdMon"
+      message = "SystemdMon is stopping on #{hostname}"
 
       attach = {
         fallback: message,
-        text: "SystemdMon is stopping on #{hostname}",
+        text: message,
         color: "danger"
       }
 
-      notifier.ping message, attachments: [attach]
+      notifier.ping "", attachments: [attach]
     end
 
     def notify!(notification)
       unit = notification.unit
-      message = "Systemd unit #{unit.name} on #{notification.hostname} #{unit.state_change.status_text}"
+      message = "#{notification.type_text}: systemd unit #{unit.name} on #{notification.hostname} #{unit.state_change.status_text}"
 
       attach = {
         fallback: "#{message}: #{unit.state.active} (#{unit.state.sub})",
@@ -82,6 +82,8 @@ module SystemdMon::Notifiers
       case type
       when :alert
         'danger'
+      when :warning
+        '#FF9900'
       when :info
         '#0099CC'
       else
