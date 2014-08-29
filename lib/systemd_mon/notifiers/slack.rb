@@ -1,5 +1,11 @@
-require 'slack-notifier'
+require 'systemd_mon/error'
 require 'systemd_mon/notifiers/base'
+
+begin
+  require 'slack-notifier'
+rescue LoadError
+  raise NotifierDependencyError, "The 'slack-notifier' gem is required by the slack notifier"
+end
 
 module SystemdMon::Notifiers
   class Slack < Base

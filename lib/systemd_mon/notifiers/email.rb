@@ -1,7 +1,12 @@
-require 'mail'
+require 'systemd_mon/error'
 require 'systemd_mon/notifiers/base'
-require 'systemd_mon/logger'
 require 'systemd_mon/formatters/state_table_formatter'
+
+begin
+  require 'mail'
+rescue LoadError
+  raise NotifierDependencyError, "The 'mail' gem is required by the email notifier"
+end
 
 module SystemdMon::Notifiers
   class Email < Base
