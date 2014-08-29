@@ -5,7 +5,7 @@ require 'systemd_mon/formatters/state_table_formatter'
 begin
   require 'mail'
 rescue LoadError
-  raise NotifierDependencyError, "The 'mail' gem is required by the email notifier"
+  raise SystemdMon::NotifierDependencyError, "The 'mail' gem is required by the email notifier"
 end
 
 module SystemdMon::Notifiers
