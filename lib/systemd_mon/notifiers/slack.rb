@@ -4,7 +4,7 @@ require 'systemd_mon/notifiers/base'
 begin
   require 'slack-notifier'
 rescue LoadError
-  raise SystemdMon::NotifierDependencyError, "The 'slack-notifier' gem is required by the slack notifier"
+  raise SystemdMon::NotifierDependencyError, "The 'slack-notifier' gem (> 1.0) is required by the slack notifier"
 end
 
 module SystemdMon::Notifiers
@@ -12,8 +12,7 @@ module SystemdMon::Notifiers
     def initialize(*)
       super
       self.notifier = ::Slack::Notifier.new(
-        options.fetch('team'),
-        options.fetch('token'),
+        options.fetch('webhook_url'),
         channel: options['channel'],
         username: options['username'],
         icon_emoji: options['icon_emoji'],

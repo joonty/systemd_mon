@@ -12,7 +12,7 @@ It works by subscribing to DBus notifications from Systemd. This means that ther
 * Ruby > 1.9.3
 * Systemd (v204 was used in development)
 * `mail` gem (if email notifier is used)
-* `slack-notifier` gem (if slack notifier is used)
+* `slack-notifier` gem > 1.0 (if slack notifier is used)
 
 ## Installation
 
@@ -41,8 +41,7 @@ notifiers:
         authentication: "plain"
         enable_starttls_auto: true
   slack:
-    team: myteam
-    token: supersecr3ttoken
+    webhook_url: https://hooks.slack.com/services/super/secret/tokenthings
     channel: mychannel
     username: doge
     icon_emoji: ":computer"
