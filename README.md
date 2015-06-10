@@ -2,7 +2,7 @@
 
 Monitor systemd units and trigger alerts for failed states. The command line tool runs as a daemon, using dbus to get notifications of changes to systemd services. If a service enters a failed state, or returns from a failed state to an active state, notifications will be triggered.
 
-Built-in notifications include email and slack, but more can be added via the ruby API.
+Built-in notifications include email, slack, and hipchat, but more can be added via the ruby API.
 
 It works by subscribing to DBus notifications from Systemd. This means that there is no polling, and no busy-loops. SystemdMon will sit in the background, happily waiting and using minimal processes.
 
@@ -13,6 +13,7 @@ It works by subscribing to DBus notifications from Systemd. This means that ther
 * Systemd (v204 was used in development)
 * `mail` gem (if email notifier is used)
 * `slack-notifier` gem > 1.0 (if slack notifier is used)
+* `hipchat` (if hipchat notifier is used)
 
 ## Installation
 
@@ -46,6 +47,10 @@ notifiers:
     username: doge
     icon_emoji: ":computer"
     icon_url: "http://example.com/icon"
+  hipchat:
+    token: bigsecrettokenhere
+    room: myroom
+    username: doge
 units:
 - unicorn.service
 - nginx.service
