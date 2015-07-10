@@ -10,7 +10,7 @@ module SystemdMon
     def start(change_callback, each_state_change_callback)
       loop do
         unit, state = queue.deq
-        Logger.debug { state }
+        Logger.debug { "#{unit} state change: #{state}" }
         unit_state = states[unit]
         unit_state << state
 

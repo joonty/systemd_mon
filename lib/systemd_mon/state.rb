@@ -28,6 +28,10 @@ module SystemdMon
     def fail?
       any?(&:fail?)
     end
+
+    def to_s
+      @all_states.join(', ')
+    end
   end
 
 end

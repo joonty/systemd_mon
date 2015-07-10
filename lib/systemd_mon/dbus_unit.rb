@@ -35,6 +35,10 @@ module SystemdMon
       dbus_object.Get(IFACE_UNIT, name).first
     end
 
+    def to_s
+      "#{name}"
+    end
+
   protected
     attr_accessor :path, :dbus_object, :change_callback, :each_state_change_callback
     attr_writer   :name
