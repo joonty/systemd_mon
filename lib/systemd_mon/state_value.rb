@@ -39,7 +39,7 @@ module SystemdMon
     end
 
     def ==(other)
-      value == other
+      other.is_a?(SystemdMon::StateValue) && value == other.value
     end
 
   protected

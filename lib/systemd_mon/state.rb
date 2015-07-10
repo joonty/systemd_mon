@@ -32,6 +32,10 @@ module SystemdMon
     def to_s
       @all_states.join(', ')
     end
+
+    def ==(other)
+      @all_states == other.all_states
+    end
   end
 
 end
