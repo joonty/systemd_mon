@@ -29,7 +29,7 @@ module SystemdMon
       when 'oneshot'
         [[], []]
       else
-        [%w(enabled), %w(disabled)]
+        [%w(enabled linked-runtime static), %w(disabled)]
       end
     end
 
