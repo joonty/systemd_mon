@@ -88,6 +88,32 @@ SystemdMon does simple analysis on the history of state changes, so it can summa
 
 You'll also want to know if SystemdMon itself falls over, and when it starts back up again. It will attempt to send a final notification before it exits, and one to say it's starting. However, be aware that it might not send a notification in some conditions (e.g. in the case of a SIGKILL), or a network failure. The age-old question: who will watch the watcher?
 
+## Docker integration
+There is a public Docker image available which bundles all requirements (Ruby + Gems). Since systemd_mon relies on dbus, you need to mount the host dbus directory into your container. Besides that, the configuration filename is currently hardcoded to systemd_mon.yml. You have to mount the directory where the systemd_mon.yml file is located on your host system into your container as well. Below is a working example: 
+
+```
+docker run --name "systemd_mon" -v /var/run/dbus:/var/run/dbus -v /path/to/systemd_mon/config/:/systemd_mon/ kromit/systemd_mon
+```
+
+If you want to run this image with systemd (very handy on CoreOS for example) you can use it as follows:
+
+```
+[Unit]
+Description=systemd_mon
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+RestartSec=60
+ExecStartPre=-/usr/bin/docker kill systemd_mon
+ExecStartPre=-/usr/bin/docker rm systemd_mon
+ExecStart=/usr/bin/docker run --name "systemd_mon" -v /var/run/dbus:/var/run/dbus -v /path/to/systemd_mon/config/:/systemd_mon/ kromit/systemd_mon
+
+[Install]
+WantedBy=multi-user.target
+```
+
 ## Contributing
 
 I'd love more contributions, particulary new notifiers. Follow the example of the slack and email notifiers and either package as a new gem or submit a pull request if you think it should be part of the main project.
