@@ -1,0 +1,11 @@
+---
+verbose: true # Default is off
+notifiers:
+  "stdout": {}
+  "gelf":
+    "host": "127.0.0.1"
+    "port": 12201
+    "level": "INFO"
+    "network": "LAN"
+units:
+- test.service
