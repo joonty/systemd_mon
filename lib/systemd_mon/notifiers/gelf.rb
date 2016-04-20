@@ -12,19 +12,31 @@ module SystemdMon::Notifiers
   class Gelf < Base
     def initialize(*)
       super
-      self.notifier = GELF::Notifier.new("localhost", 12201, "LAN")
-    end
+      host = options["host"] || "127.0.0.1"
+      port = options["port"] || 12201
+      max_size = options["network"] || "WAN"
+      self.notifier = GELF::Notifier.new(host, port, max_size)
+      if options["level"] && !options["level"].empty?
+        if GELF::Levels.constants.include? options["level"].upcase.to_sym
+          @level = options["level"].downcase.to_sym
+        else
+          raise SystemdMon::NotifierDependencyError, "The configured loglevel #{options["level"]} is not a valid GELF loglevel"
+        end
+      else
+        @level = :info
+      end
+    end 
 
     def notify_start!(hostname)
       message = "SystemdMon is starting on #{hostname}"
 
-      notifier.debug(message)
+      send_notification(message)
     end
 
     def notify_stop!(hostname)
       message = "SystemdMon is stopping on #{hostname}"
 
-      notifier.debug(message)
+      send_notification(message)
     end
 
     def notify!(notification)
@@ -32,11 +44,15 @@ module SystemdMon::Notifiers
 
       unit.state_change.each do |change|
         msg = {timestamp: change.active.timestamp, short_message: "state change", _unit: unit.name, host: notification.hostname, _active: change.active.value, _sub: change.sub.value, _loaded: change.loaded.value, _enabled: change.unit_file.value }
-        notifier.info(msg)
+        send_notification(msg)
       end
     end
 
     protected
-      attr_accessor :notifier, :options
+      attr_accessor :notifier, :options, :level
+
+      def send_notification(msg)
+        notifier.__send__(level, msg)
+      end
   end
 end
