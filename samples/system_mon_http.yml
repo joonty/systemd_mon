@@ -1,0 +1,9 @@
+---
+verbose: true # Default is off
+notifiers:
+  "stdout": {}
+  "http":
+    "bind_address": "0.0.0.0"
+    "bind_port": 9000
+units:
+- test.service
