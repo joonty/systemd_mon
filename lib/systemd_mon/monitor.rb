@@ -11,7 +11,8 @@ module SystemdMon
       self.hostname     = `hostname`.strip
       self.dbus_manager = dbus_manager
       self.units        = []
-      self.change_callback     = lambda(&method(:unit_change_callback))
+      self.change_callback        = lambda(&method(:unit_change_callback))
+      self.initial_state_callback = lambda(&method(:unit_initial_state_callback))
       self.notification_centre = NotificationCentre.new
       Thread.abort_on_exception = true
     end
@@ -43,6 +44,11 @@ module SystemdMon
       self
     end
 
+    def on_initial_state(&callback)
+      self.initial_state_callback = callback
+      self
+    end
+
     def start
       startup_check!
       at_exit { notification_centre.notify_stop! hostname }
@@ -63,7 +69,7 @@ module SystemdMon
     end
 
 protected
-    attr_accessor :units, :dbus_manager, :change_callback, :each_state_change_callback, :hostname, :notification_centre
+    attr_accessor :units, :dbus_manager, :change_callback, :each_state_change_callback, :initial_state_callback, :hostname, :notification_centre
 
     def startup_check!
       unless units.any?
@@ -84,15 +90,23 @@ protected
     def start_callback_thread(state_q)
       Thread.new do
         manager = CallbackManager.new(state_q)
-        manager.start change_callback, each_state_change_callback
+        manager.start change_callback, each_state_change_callback, initial_state_callback
       end
     end
 
     def unit_change_callback(unit)
       Logger.puts "#{unit.name} #{unit.state_change.status_text}: #{unit.state.active} (#{unit.state.sub})"
-      Logger.debug unit.state_change.to_s
+      #Logger.debug unit.state_change.to_s
       Logger.puts
       notification_centre.notify! Notification.new(hostname, unit)
+    end
+
+    def unit_initial_state_callback(unit)
+      Logger.puts "#{unit.name} Initial state #{unit.state_change.status_text}: #{unit.state.active} (#{unit.state.sub})"
+      #Logger.debug unit.state_change.to_s
+      Logger.puts
+      notification_centre.initial_state! Notification.new(hostname, unit)
+      Logger.debug "sent initial state"
     end
   end
 end
