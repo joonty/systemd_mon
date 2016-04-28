@@ -48,6 +48,18 @@ module SystemdMon
       end
     end
 
+    def initial_state!(notification)
+      Logger.debug "initial state"
+      each_notifier do |notifier|
+        if notifier.respond_to?(:initial_state!)
+          Logger.puts "Notifying state change of #{notification.unit.name} via #{notifier.class}"
+          notifier.initial_state!(notification)
+        else
+          Logger.debug { "#{notifier.class} doesn't respond to 'initial_state!', not setting initial state" }
+        end
+      end
+    end
+
     def notify!(notification)
       each_notifier do |notifier|
         Logger.puts "Notifying state change of #{notification.unit.name} via #{notifier.class}"
@@ -68,7 +80,7 @@ module SystemdMon
           rescue => e
             Logger.error "Failed to send notification via #{notifier.class}:\n"
             Logger.error "  #{e.class}: #{e.message}\n"
-            Logger.debug_error { "\n\t#{e.backtrace.join('\n\t')}\n" }
+            Logger.error { "\n\t#{e.backtrace.join('\n\t')}\n" }
           end
         end
       }.each(&:join)
