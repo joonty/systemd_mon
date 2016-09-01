@@ -22,14 +22,22 @@ module SystemdMon
     end
 
     def register_unit(unit_name)
-      self.units << dbus_manager.fetch_unit(unit_name)
+      begin
+        self.units << dbus_manager.fetch_unit(unit_name)
+      rescue SystemdMon::UnknownUnitError => e
+        Logger.puts e.message
+      end
       self
     end
 
     def register_units(*unit_names)
       self.units.concat unit_names.flatten.map { |unit_name|
-        dbus_manager.fetch_unit(unit_name)
-      }
+        begin
+          dbus_manager.fetch_unit(unit_name)
+        rescue SystemdMon::UnknownUnitError => e
+          Logger.puts e.message
+        end
+      }.compact
       self
     end
 
