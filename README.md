@@ -51,6 +51,9 @@ notifiers:
     token: bigsecrettokenhere
     room: myroom
     username: doge
+  desktop:
+   start_stop_message: false
+   timeout: 2000
 units:
 - unicorn.service
 - nginx.service
