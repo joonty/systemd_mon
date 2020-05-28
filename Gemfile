@@ -1,5 +1,4 @@
 source 'https://rubygems.org'
 
-gem 'gelf'
-# Specify your gem's dependencies in systemd_alert.gemspec
+# Specify your gem's dependencies in systemd_mon.gemspec
 gemspec

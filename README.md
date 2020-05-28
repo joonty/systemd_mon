@@ -14,6 +14,7 @@ It works by subscribing to DBus notifications from Systemd. This means that ther
 * `mail` gem (if email notifier is used)
 * `slack-notifier` gem > 1.0 (if slack notifier is used)
 * `hipchat` (if hipchat notifier is used)
+* `dingbot` gem (if ding notifier is used)
 
 ## Installation
 
@@ -32,6 +33,9 @@ notifiers:
   email:
     to: "team@mydomain.com"
     from: "systemdmon@mydomain.com"
+    # cc and bcc are optional
+    cc: "cc@mydomain.com"
+    bcc: "bcc@mydomain.com"
     # These are options passed to the 'mail' gem
     smtp:
         address: smtp.gmail.com
@@ -51,6 +55,21 @@ notifiers:
     token: bigsecrettokenhere
     room: myroom
     username: doge
+  desktop:
+   start_stop_message: false
+   timeout: 2000
+  ding:
+    endpoint: https://oapi.dingtalk.com/robot/send
+    access_token: xxxxxxxxxxxx
+  stdout: {}
+  gelf:
+    host: 127.0.0.1
+    port: 12201
+    level: INFO
+    network: LAN
+  http:
+    bind_address: 0.0.0.0
+    bind_port: 9000
 units:
 - unicorn.service
 - nginx.service

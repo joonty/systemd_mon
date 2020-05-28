@@ -88,6 +88,7 @@ module SystemdMon
 
     def diff
       @diff ||= zipped.reject { |states|
+        states = states.kind_of?(Array) ? states : [states]
         match = states.first.value
         states.all? { |s| s.value == match }
       }

@@ -42,7 +42,7 @@ module SystemdMon
 
   protected
     def start_monitor
-      monitor = Monitor.new(DBusManager.new)
+      monitor = Monitor.new(options['hostname'] || `hostname`.strip, DBusManager.new)
 
       # Load units to monitor
       monitor.register_units options['units']
