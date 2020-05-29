@@ -1,0 +1,48 @@
+verbose: true # Default is off
+hostname: hostname
+notifiers:
+  desktop:
+   start_stop_message: false
+   timeout: 2000
+  ding:
+    endpoint: https://oapi.dingtalk.com/robot/send
+    access_token: accesstokenhere
+  email:
+    to: "team@mydomain.com"
+    from: "systemdmon@mydomain.com"
+    # cc and bcc are optional
+    cc: "cc@mydomain.com"
+    bcc: "bcc@mydomain.com"
+    # These are options passed to the 'mail' gem
+    smtp:
+        address: smtp.gmail.com
+        port: 587
+        domain: mydomain.com
+        user_name: "user@mydomain.com"
+        password: "supersecr3t"
+        authentication: "plain"
+        enable_starttls_auto: true
+  gelf:
+    host: 127.0.0.1
+    port: 12201
+    level: INFO
+    network: LAN
+  hipchat:
+    token: bigsecrettokenhere
+    room: myroom
+    username: doge
+  http:
+    bind_address: 0.0.0.0
+    #with docker and docker-compose, remember to use the correct port if you modified it here
+    bind_port: 9000
+  slack:
+    webhook_url: https://hooks.slack.com/services/super/secret/tokenthings
+    channel: mychannel
+    username: doge
+    icon_emoji: ":computer"
+    icon_url: "http://example.com/icon"
+  stdout: {}
+units:
+- unicorn.service
+- nginx.service
+- sidekiq.service

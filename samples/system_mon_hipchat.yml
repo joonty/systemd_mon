@@ -1,11 +1,10 @@
 verbose: true # Default is off
 hostname: hostname
 notifiers:
-  gelf:
-    host: ip_of_gelf_host
-    port: port_of_gelf_host
-    level: INFO
-    network: LAN
+  hipchat:
+    token: bigsecrettokenhere
+    room: myroom
+    username: doge
 units:
 - unicorn.service
 - nginx.service

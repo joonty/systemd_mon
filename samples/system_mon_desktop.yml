@@ -1,11 +1,9 @@
 verbose: true # Default is off
 hostname: hostname
 notifiers:
-  gelf:
-    host: ip_of_gelf_host
-    port: port_of_gelf_host
-    level: INFO
-    network: LAN
+  desktop:
+   start_stop_message: false
+   timeout: 2000
 units:
 - unicorn.service
 - nginx.service

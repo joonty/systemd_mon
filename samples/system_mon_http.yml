@@ -1,9 +1,11 @@
----
 verbose: true # Default is off
+hostname: hostname
 notifiers:
-  "stdout": {}
-  "http":
-    "bind_address": "0.0.0.0"
-    "bind_port": 9000
+  http:
+    bind_address: 0.0.0.0
+    #with docker and docker-compose, remember to use the correct port if you modified it here
+    bind_port: 9000
 units:
-- test.service
+- unicorn.service
+- nginx.service
+- sidekiq.service

@@ -1,11 +1,9 @@
 verbose: true # Default is off
 hostname: hostname
 notifiers:
-  gelf:
-    host: ip_of_gelf_host
-    port: port_of_gelf_host
-    level: INFO
-    network: LAN
+  ding:
+    endpoint: https://oapi.dingtalk.com/robot/send
+    access_token: accesstokenhere
 units:
 - unicorn.service
 - nginx.service

@@ -1,0 +1,13 @@
+verbose: true # Default is off
+hostname: hostname
+notifiers:
+  slack:
+    webhook_url: https://hooks.slack.com/services/super/secret/tokenthings
+    channel: mychannel
+    username: doge
+    icon_emoji: ":computer"
+    icon_url: "http://example.com/icon"
+units:
+- unicorn.service
+- nginx.service
+- sidekiq.service

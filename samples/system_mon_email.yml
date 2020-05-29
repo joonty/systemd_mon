@@ -1,0 +1,22 @@
+verbose: true # Default is off
+hostname: hostname
+notifiers:
+  email:
+    to: "team@mydomain.com"
+    from: "systemdmon@mydomain.com"
+    # cc and bcc are optional
+    cc: "cc@mydomain.com"
+    bcc: "bcc@mydomain.com"
+    # These are options passed to the 'mail' gem
+    smtp:
+        address: smtp.gmail.com
+        port: 587
+        domain: mydomain.com
+        user_name: "user@mydomain.com"
+        password: "supersecr3t"
+        authentication: "plain"
+        enable_starttls_auto: true
+units:
+- unicorn.service
+- nginx.service
+- sidekiq.service
