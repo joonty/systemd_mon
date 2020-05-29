@@ -22,6 +22,6 @@ RUN bundle install
 ENV RUBYLIB=/usr/src/app/lib
 
 HEALTHCHECK --interval=10s --timeout=10s --retries=3 --start-period=120s \
-    CMD "ping -w 8 -4 -c 1 8.8.8.8 || exit 1"
+    CMD ping -w 8 -4 -c 1 8.8.8.8 || exit 1
 
 CMD ["./bin/systemd_mon", "/systemd_mon/systemd_mon.yml"]

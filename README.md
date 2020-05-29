@@ -1,3 +1,12 @@
+All credits go to joonty (https://github.com/joonty/systemd_mon) who is the author behind this tool.
+To offer a complete experience, I have also incorporated the improvements made by:
+- Asquera (https://github.com/Asquera/systemd_mon) => stdout, gelf and http notifier
+- florczakraf (https://github.com/florczakraf/systemd_mon) => fields 'cc' and 'bcc' for emails
+- kennep (https://github.com/kennep/systemd_mon) => addition of the parameters 'hostname' and first version Dockerfile
+- Maistho (https://github.com/Maistho/systemd_mon) => corrections of various problems such as not starting during a missing systemd unit or resending the initial state at startup
+- milk531 (https://github.com/milk531/systemd_mon) => dingbot notify
+- p91 (https://github.com/p91/systemd_mon) => Desktop notification via DBus
+
 # SystemdMon
 
 Monitor systemd units and trigger alerts for failed states. The command line tool runs as a daemon, using dbus to get notifications of changes to systemd services. If a service enters a failed state, or returns from a failed state to an active state, notifications will be triggered.
@@ -9,7 +18,7 @@ It works by subscribing to DBus notifications from Systemd. This means that ther
 ## Requirements
 
 * A linux server
-* Ruby > 1.9.3
+* Ruby > 1.9.3 (2.7 for Dockerfile)
 * Systemd (v204 was used in development)
 * `mail` gem (if email notifier is used)
 * `slack-notifier` gem > 1.0 (if slack notifier is used)

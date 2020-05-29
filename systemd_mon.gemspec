@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "ruby-dbus", "~> 0.16.0"
+  spec.add_dependency "ruby-dbus", "> 0.16.0"
   spec.add_dependency "slack-notifier", "> 1.0"
   spec.add_dependency "mail", "> 2.0"
   spec.add_dependency "hipchat", "> 1.5"
