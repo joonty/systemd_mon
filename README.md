@@ -65,8 +65,8 @@ notifiers:
         authentication: "plain"
         enable_starttls_auto: true
   gelf:
-    host: 127.0.0.1
-    port: 12201
+    host: ip_of_gelf_host
+    port: port_of_gelf_host
     level: INFO
     network: LAN
   hipchat:
