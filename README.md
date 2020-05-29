@@ -123,8 +123,6 @@ You'll also want to know if SystemdMon itself falls over, and when it starts bac
 
 ## Docker integration
 
-
-
 You can either:
 - Create your own image via the Dockerfile provides
 
@@ -135,7 +133,7 @@ docker build -t systemd_mon-image-name.
 
 where "systemd_mon-image-name" is the name of the image you want to create
 
-- Directly use the image created on my docker hub (link)
+- Directly use the image created on my docker hub (https://hub.docker.com/r/gawindx/systemd_mon)
 
 ```
 docker pull gawindx / systemd_mon: latest
@@ -184,7 +182,7 @@ services:
 #    network_mode: "host"
     logging:
       driver: journald
-#uncoment if you use http notifier
+#uncomment if you use http notifier
 #use the same port here as in the configuration file
 #    ports:
 #      - 9000:9000/tcp
@@ -229,4 +227,5 @@ WantedBy=multi-user.target
 ## Healthcheck
 
 The Dockerfile provided incorporates a Healthcheck routine based on an external ping.
-It is therefore easy to monitor his condition and his ability to communicate to the outside
+
+It is therefore easy to monitor his condition and his ability to communicate to the outside (willfarrell/autoheal by example)
