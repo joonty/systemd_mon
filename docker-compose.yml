@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  docker-systemdmon:
+    image: gawindx/systemd_mon
+    restart: always
+    container_name: systemd_mon
+#optional
+#    network_mode: "host"
+    logging:
+      driver: journald
+#uncomment if you use http notifier
+#use the same port here as in the configuration file
+#    ports:
+#      - 9000:9000/tcp
+#If you use your own dns servers, it may be wise to indicate an external dns here
+#so that the container can reach the internet in difficulties (slack, dingbot, etc.)
+#    dns:
+#      - 8.8.8.8
+    volumes:
+      - /var/run/dbus:/var/run/dbus:ro
+      - /path/to/systemd_mon/config/:/systemd_mon/
